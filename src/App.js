@@ -8,9 +8,23 @@ import { useNavigate } from "react-router-dom";
 
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 function App() {
   let navigate = useNavigate();
+
+  const result = useQuery({
+    queryKey: ["result"],
+    queryFn: () => {
+      return (
+        axios.get("https://codingapple1.github.io/userdata.json").then((a) => {
+          return a.data;
+        }),
+        { staleTime: 2000 }
+      );
+    },
+  });
 
   useEffect(() => {
     localStorage.setItem("watched", JSON.stringify([]));
@@ -43,6 +57,9 @@ function App() {
             >
               Cart
             </Nav.Link>
+          </Nav>
+          <Nav className="ms-auto">
+            {result.isLoading ? "Loading..." : result.data.name}
           </Nav>
         </Container>
       </Navbar>
